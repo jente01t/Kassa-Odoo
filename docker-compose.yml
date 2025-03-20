@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -13,6 +11,7 @@ services:
       - "5432:5432"
     networks:
       - odoo_network
+    restart: always  # Added for automatic restart
 
   rabbitmq:
     image: rabbitmq:management
@@ -25,6 +24,7 @@ services:
       - "15672:15672" 
     networks:
       - odoo_network
+    restart: always  # Added for automatic restart
 
   odoo:
     build:
@@ -38,7 +38,8 @@ services:
       - "8069:8069"
     volumes:
       - ./custom-addons:/mnt/extra-addons
-      - ./config:/etc/odoo
+      - ./config:/etc/odoo  # Keep this!
+      - odoo-web-data:/var/lib/odoo/web/static
       - ./data:/var/lib/odoo
     environment:
       - HOST=db
@@ -47,9 +48,11 @@ services:
       - RABBITMQ_HOST=rabbitmq  
     networks:
       - odoo_network
+    restart: always  # Added for automatic restart
 
 volumes:
   odoo-db-data:
+  odoo-web-data:
 
 networks:
   odoo_network:
